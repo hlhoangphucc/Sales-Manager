@@ -1,0 +1,151 @@
+﻿@model IEnumerable<NHOM04.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container-fluid mb-5">
+    <div class="row border-top px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
+            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                <h6 class="m-0"><i class="fas fa-list">&nbsp DANH MỤC</i></h6>
+                <i class="fa fa-angle-down text-dark"></i>
+            </a>
+            <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
+                <div class="navbar-nav w-100 overflow-hidden" style="height: 250px">
+                    <a asp-area="" asp-controller="Home" asp-action="" class="nav-item nav-link "><i class="fas fa-home">&nbsp Trang chủ</i></a>
+                    <a asp-area="" asp-controller="Products" asp-action="" class="nav-item nav-link active"><i class="fas fa-tv">&nbsp Tivi</i></a>
+                    <a asp-area="" asp-controller="Products" asp-action="" class="nav-item nav-link "><i class="fas fa-calendar-day">&nbsp Chi tiết</i></a>
+                    <a asp-area="" asp-controller="Carts" asp-action="" class="nav-item nav-link "><i class="fas fa-shopping-cart">&nbsp Giỏ hàng</i></a>
+                    <a href="contact.html" class="nav-item nav-link"><i class="fas fa-question">&nbsp Về chúng tôi</i></a>
+                </div>
+            </nav>
+        </div>
+        <div class="col-lg-9">
+            <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                <a href="" class="text-decoration-none d-block d-lg-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                </a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+            <div id="header-carousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" style="height: 310px;">   
+                        <div class="container-fluid bg-secondary mb-5">
+                            <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+                                <h1 class="font-weight-semi-bold text-uppercase mb-3">Shop Tivi</h1>
+                                    <div class="d-inline-flex">
+                    `                   <p class="m-0"><a href="">Trang chủ</a></p>
+                                        <p class="m-0 px-2">-</p>
+                                        <p class="m-0">Cửa hàng</p>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Navbar End -->
+
+
+<div class="container-fluid pt-5">
+    <div class="text-center mb-4">
+        <h2 class="section-title px-5"><span class="px-2">Tivi Sam Sung</span></h2>
+    </div>
+    <div class="row px-xl-5 pb-3">
+        @foreach (var item in Model){
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="card product-item border-0 mb-4">
+                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                    <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@item.Id">
+                        <img class="img-fluid w-100" src="~/img/product/@item.Image" alt="">                       
+                    </a>
+                </div>
+                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                    <h6 class="text-truncate mb-3">@Html.DisplayFor(modelItem => item.Name)</h6>
+                    <div class="d-flex justify-content-center">
+                        <h6>@Html.DisplayFor(modelItem => item.Price) (VNĐ)</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between bg-light border">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                    <a asp-area="" asp-controller="Carts" asp-action="Add" asp-route-ProductId="@item.Id" asp-route-Quantity="1" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+
+
+@*<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SKU)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SKU)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>*@
