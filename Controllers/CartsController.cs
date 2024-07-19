@@ -1,40 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using SHOPTV.Data;
+using SHOPTV.Models;
+using System.Diagnostics;
 
-namespace NHOM04.Controllers
+namespace SHOPTV.Controllers
 {
     public class CartsController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public CartsController(NHOM04Context context)
+        public CartsController(SHOPTVContext context)
         {
             _context = context;
         }
 
         // GET: Carts
-        public async Task<IActionResult> Index(string username)
+        public async Task<IActionResult> Index()
         {
-            ViewBag.id = HttpContext.Session.GetInt32("id");
-            ViewBag.user = HttpContext.Session.GetString("username");
-            username = ViewBag.user;
-            if(username == null)
+            // Lấy thông tin người dùng từ session
+            var username = HttpContext.Session.GetString("username");
+
+            // Kiểm tra xem người dùng đã đăng nhập chưa
+            if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login", "User");
             }
-            ViewBag.name = HttpContext.Session.GetString("fullname");
-            //string username = "john";
-            var nHOM04Context = _context.Carts.Include(c => c.Account).Include(c => c.Product).Where(c => c.Account.Username == username); ;
-            return View(await nHOM04Context.ToListAsync());
-        }
 
+            // Đặt các giá trị vào ViewBag để sử dụng trong View nếu cần thiết
+            ViewBag.id = HttpContext.Session.GetInt32("id");
+            ViewBag.user = username;
+            ViewBag.name = HttpContext.Session.GetString("fullname");
+            
+            // Lấy danh sách sản phẩm trong giỏ hàng của người dùng hiện tại
+            var cartItems = await _context.Carts
+                .Include(c => c.Account)
+                .Include(c => c.Product)
+                .Where(c => c.Account.Username == username)
+                .ToListAsync();
+            return View(cartItems);
+        }
         // GET: Carts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -172,11 +179,11 @@ namespace NHOM04.Controllers
             {
                 _context.Carts.Remove(cart);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-       [HttpPost]
+        [HttpPost]
         public IActionResult DeleteAll(string username)
         {
             ViewBag.id = HttpContext.Session.GetInt32("id");
@@ -208,8 +215,12 @@ namespace NHOM04.Controllers
             var carts = _context.Carts.Include(c => c.Account)
                                       .Include(c => c.Product)
                                       .Where(c => c.Account.Username == username);
-
-            var accountId = _context.Accounts.FirstOrDefault(a => a.Username == username).Id;
+            var account = _context.Accounts.FirstOrDefault(a => a.Username == username);
+            int accountId = 0;
+            if (account != null)
+            {
+                accountId = account.Id;
+            }
             var total = carts.Sum(c => c.Product.Price * c.Quantity);
 
             Invoice invoice = new Invoice
@@ -247,7 +258,7 @@ namespace NHOM04.Controllers
 
         private bool CartExists(int id)
         {
-          return _context.Carts.Any(e => e.Id == id);
+            return _context.Carts.Any(e => e.Id == id);
         }
 
         public IActionResult Add(int productid, int quantity)
@@ -255,34 +266,92 @@ namespace NHOM04.Controllers
             ViewBag.id = HttpContext.Session.GetInt32("id");
             ViewBag.user = HttpContext.Session.GetString("username");
             string username = ViewBag.user;
-            //string username = "dhphuoc";
-            var accountid = _context.Accounts.FirstOrDefault(a => a.Username == username).Id;
-            var cart = _context.Carts.Where(c => c.AccountId == accountid && c.ProductId == productid).FirstOrDefault();
-            if (cart != null)
+
+            var account = _context.Accounts.FirstOrDefault(a => a.Username == username);
+
+            if (account != null)
             {
-                cart.Quantity += quantity;
-                _context.Update(cart);
-                _context.SaveChanges(); 
+
+                var accountid = account.Id;
+                var cart = _context.Carts.Where(c => c.AccountId == accountid && c.ProductId == productid).FirstOrDefault();
+
+                if (cart != null)
+                {
+                    cart.Quantity += quantity;
+                    _context.Update(cart);
+                    _context.SaveChanges();
+                }
+                else
+                {
+
+                    cart = new Cart
+                    {
+                        AccountId = accountid,
+                        ProductId = productid,
+                        Quantity = quantity
+                    };
+                    _context.Carts.Add(cart);
+                    _context.SaveChanges();
+                }
+                return Json(new { success = true, message = "Product added to cart successfully." });
             }
             else
             {
-                cart = new Cart
-                {
-                    AccountId = accountid,
-                    ProductId = productid,
-                    Quantity = quantity
-                };
-                _context.Carts.Add(cart);
+                return RedirectToAction("Login", "User");
+                throw new InvalidOperationException($"Account with username '{username}' not found.");
             }
-            //Cart cart = new Cart
-            //{
-            //    AccountId = accountid,
-            //    ProductId = productid,
-            //    Quantity = quantity
-            //};
-            //_context.Carts.Add(cart);
-            _context.SaveChanges();
-            return RedirectToAction("Index", "Carts");
+
         }
+
+        [HttpPost]
+        public JsonResult UpdateQuantity(int productid, int quantity)
+        {
+            try
+            {
+                ViewBag.id = HttpContext.Session.GetInt32("id");
+                int? id = ViewBag.id;
+                if (id.HasValue && id.Value > 0)
+                {
+                    var cart = _context.Carts.Where(c => c.AccountId == id && c.ProductId == productid).FirstOrDefault();
+                    if (cart != null)
+                    {
+                        cart.Quantity = quantity;
+                        _context.Update(cart);
+                        _context.SaveChanges();
+                        return Json(new { success = true });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Cart item not found" });
+                    }
+                }
+                return Json(new { success = false, message = "Account not found" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public JsonResult GetQuantity()
+        {
+            try
+            {
+                ViewBag.id = HttpContext.Session.GetInt32("id");
+                int? id = ViewBag.id;
+                if (id.HasValue && id.Value > 0)
+                {
+                    var totalQuantity = _context.Carts.Where(c => c.AccountId == id).Sum(c => c.Quantity);
+                    return Json(new { success = true, totalQuantity = totalQuantity });
+
+                }
+                return Json(new { success = false, message = "Account not found" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

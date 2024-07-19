@@ -1,4 +1,4 @@
-﻿@model NHOM04.Models.Account
+﻿@model SHOPTV.Models.Account
 
 @{
     ViewData["Title"] = "Delete";
@@ -59,12 +59,7 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Avatar)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
+       
     </dl>
     
     <form asp-action="Delete">

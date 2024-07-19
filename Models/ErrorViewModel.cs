@@ -1,4 +1,4 @@
-namespace NHOM04.Models
+namespace SHOPTV.Models
 {
     public class ErrorViewModel
     {

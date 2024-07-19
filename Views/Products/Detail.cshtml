@@ -1,7 +1,7 @@
-﻿@model NHOM04.Models.Product
+﻿@model SHOPTV.Models.Product
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detail";
 }
 
 <!-- Navbar Start -->
@@ -95,7 +95,7 @@
                         </button>
                     </div>
                 </div>                
-                <a asp-area="" asp-controller="Carts" asp-action="" asp-route-id=@Html.DisplayFor(model => model.Id) class="btn btn-primary px-3">
+                <a asp-area="" asp-controller="Carts" asp-action="Add" asp-route-id=@Html.DisplayFor(model => model.Id) class="btn btn-primary px-3">
                     <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
                 </a>                
             </div>

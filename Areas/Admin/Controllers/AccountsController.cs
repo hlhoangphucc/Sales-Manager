@@ -5,17 +5,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SHOPTV.Data;
+using SHOPTV.Models;
 
-namespace NHOM04.Areas.Admin.Controllers
+namespace SHOPTV.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class AccountsController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public AccountsController(NHOM04Context context)
+        public AccountsController(SHOPTVContext context)
         {
             _context = context;
         }
@@ -96,10 +97,28 @@ namespace NHOM04.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
-            _context.Update(account);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(account);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AccountExists(account.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+             
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(account);
         }
 
         // GET: Admin/Accounts/Delete/5

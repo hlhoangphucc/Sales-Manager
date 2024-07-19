@@ -5,32 +5,33 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NHOM04.Data;
+using SHOPTV.Data;
 
 #nullable disable
 
-namespace NHOM04.Migrations
+namespace ShopTv.Migrations
 {
-    [DbContext(typeof(NHOM04Context))]
-    [Migration("20221214141230_Init")]
-    partial class Init
+    [DbContext(typeof(SHOPTVContext))]
+    [Migration("20240712091216_InitialCreate")]
+    partial class InitialCreate
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.10")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("NHOM04.Models.Account", b =>
+            modelBuilder.Entity("SHOPTV.Models.Account", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -60,9 +61,6 @@ namespace NHOM04.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -73,13 +71,13 @@ namespace NHOM04.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Cart", b =>
+            modelBuilder.Entity("SHOPTV.Models.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
@@ -99,13 +97,13 @@ namespace NHOM04.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Invoice", b =>
+            modelBuilder.Entity("SHOPTV.Models.Invoice", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
@@ -138,13 +136,13 @@ namespace NHOM04.Migrations
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.InvoiceDetail", b =>
+            modelBuilder.Entity("SHOPTV.Models.InvoiceDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
@@ -167,13 +165,13 @@ namespace NHOM04.Migrations
                     b.ToTable("InvoiceDetails");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Product", b =>
+            modelBuilder.Entity("SHOPTV.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -210,13 +208,13 @@ namespace NHOM04.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.ProductType", b =>
+            modelBuilder.Entity("SHOPTV.Models.ProductType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -230,15 +228,15 @@ namespace NHOM04.Migrations
                     b.ToTable("ProductTypes");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Cart", b =>
+            modelBuilder.Entity("SHOPTV.Models.Cart", b =>
                 {
-                    b.HasOne("NHOM04.Models.Account", "Account")
+                    b.HasOne("SHOPTV.Models.Account", "Account")
                         .WithMany("Carts")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NHOM04.Models.Product", "Product")
+                    b.HasOne("SHOPTV.Models.Product", "Product")
                         .WithMany("Carts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -249,9 +247,9 @@ namespace NHOM04.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Invoice", b =>
+            modelBuilder.Entity("SHOPTV.Models.Invoice", b =>
                 {
-                    b.HasOne("NHOM04.Models.Account", "Account")
+                    b.HasOne("SHOPTV.Models.Account", "Account")
                         .WithMany("Invoices")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -260,15 +258,15 @@ namespace NHOM04.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.InvoiceDetail", b =>
+            modelBuilder.Entity("SHOPTV.Models.InvoiceDetail", b =>
                 {
-                    b.HasOne("NHOM04.Models.Invoice", "Invoice")
+                    b.HasOne("SHOPTV.Models.Invoice", "Invoice")
                         .WithMany("InvoiceDetails")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NHOM04.Models.Product", "Product")
+                    b.HasOne("SHOPTV.Models.Product", "Product")
                         .WithMany("InvoiceDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -279,9 +277,9 @@ namespace NHOM04.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Product", b =>
+            modelBuilder.Entity("SHOPTV.Models.Product", b =>
                 {
-                    b.HasOne("NHOM04.Models.ProductType", "ProductType")
+                    b.HasOne("SHOPTV.Models.ProductType", "ProductType")
                         .WithMany("Products")
                         .HasForeignKey("ProductTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -290,26 +288,26 @@ namespace NHOM04.Migrations
                     b.Navigation("ProductType");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Account", b =>
+            modelBuilder.Entity("SHOPTV.Models.Account", b =>
                 {
                     b.Navigation("Carts");
 
                     b.Navigation("Invoices");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Invoice", b =>
+            modelBuilder.Entity("SHOPTV.Models.Invoice", b =>
                 {
                     b.Navigation("InvoiceDetails");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.Product", b =>
+            modelBuilder.Entity("SHOPTV.Models.Product", b =>
                 {
                     b.Navigation("Carts");
 
                     b.Navigation("InvoiceDetails");
                 });
 
-            modelBuilder.Entity("NHOM04.Models.ProductType", b =>
+            modelBuilder.Entity("SHOPTV.Models.ProductType", b =>
                 {
                     b.Navigation("Products");
                 });

@@ -1,4 +1,4 @@
-﻿@model NHOM04.Models.Account
+﻿@model SHOPTV.Models.Account
 
 @{
     ViewData["Title"] = "Create";
@@ -51,11 +51,6 @@
                 <label asp-for="Avatar" class="control-label"></label>
                 <input asp-for="Avatar" class="form-control" />
                 <span asp-validation-for="Avatar" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

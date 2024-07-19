@@ -1,0 +1,38 @@
+﻿
+.custom-row {
+    background-color:gainsboro;
+    border-radius: 8px;
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+
+    .custom-row:hover {
+        background-color: lightgray;
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+
+label {
+    font-weight: normal;
+    transition: font-weight 0.5s;
+}
+
+    label.bold {
+        font-weight: bold;
+        color:black
+    }
+
+.form-control {
+    margin-bottom: 10px; /* Thêm khoảng cách giữa các trường nhập liệu */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Màu xanh đậm */
+    border-color: #007bff;
+    color: white;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }

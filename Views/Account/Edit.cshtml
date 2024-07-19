@@ -1,0 +1,33 @@
+﻿@model SHOPTV.Models.Account
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Thông tin của bạn</h2>
+<hr />
+
+<div class="row">
+    <div class="profile-header">
+        <img src="@ViewBag.avatar" alt="Profile Image" class="profile-image" />
+        <h2>@ViewBag.avt</h2>
+        <span class="text-muted px-2">Xin chào: &nbsp @ViewBag.name </span>
+    </div>
+    <div class="profile-tabs">
+        <button class="tab active">Giới thiệu về tôi</button>
+        <button class="tab">Chỉnh sửa hồ sơ</button>
+        <button class="tab">Đổi mật khẩu</button>
+    </div>
+
+    <form asp-action="Edit" class="profile-form" method="post" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="Address">Địa chỉ</label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </form>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

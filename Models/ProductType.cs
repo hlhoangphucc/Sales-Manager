@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NHOM04.Models
+namespace SHOPTV.Models
 {
     public class ProductType
     {
@@ -13,13 +13,13 @@ namespace NHOM04.Models
 
         [DisplayName("Loại sản phẩm")]
         [Required(ErrorMessage = "{0} không được bỏ trống")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [DisplayName("Còn hiệu lực")]
         [DefaultValue(true)]
         public bool Status { get; set; } = true;
 
         // Collection reference property cho khóa ngoại từ Product
-        public List<Product> Products { get; set; }
+        public List<Product> Products { get; set; } = new List<Product>();
     }
 }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NHOM04.Models
+namespace SHOPTV.Models
 {
     public class Cart
     {
@@ -15,13 +15,13 @@ namespace NHOM04.Models
 
         // Navigation reference property cho khóa ngoại đến Account
         [DisplayName("Khách hàng")]
-        public Account Account { get; set; }
+        public Account? Account { get; set; } 
 
         public int ProductId { get; set; }
 
         // Navigation reference property cho khóa ngoại đến Product
         [DisplayName("Sản phẩm")]
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         [Required(ErrorMessage = "{0} không được bỏ trống")]
         [DefaultValue(1)]

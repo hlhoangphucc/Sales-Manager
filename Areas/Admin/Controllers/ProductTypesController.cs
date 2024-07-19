@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using SHOPTV.Data;
+using SHOPTV.Models;
 
-namespace NHOM04.Areas.Admin.Controllers
+namespace SHOPTV.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductTypesController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public ProductTypesController(NHOM04Context context)
+        public ProductTypesController(SHOPTVContext context)
         {
             _context = context;
         }
@@ -54,8 +54,6 @@ namespace NHOM04.Areas.Admin.Controllers
         }
 
         // POST: Admin/ProductTypes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Status")] ProductType productType)
@@ -86,8 +84,6 @@ namespace NHOM04.Areas.Admin.Controllers
         }
 
         // POST: Admin/ProductTypes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status")] ProductType productType)
@@ -97,9 +93,27 @@ namespace NHOM04.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            _context.Update(productType);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(productType);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductTypeExists(productType.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(productType);
         }
 
         // GET: Admin/ProductTypes/Delete/5
@@ -127,21 +141,21 @@ namespace NHOM04.Areas.Admin.Controllers
         {
             if (_context.ProductTypes == null)
             {
-                return Problem("Entity set 'NHOM04Context.ProductTypes'  is null.");
+                return Problem("Entity set 'SHOPTVContext.ProductTypes'  is null.");
             }
             var productType = await _context.ProductTypes.FindAsync(id);
             if (productType != null)
             {
                 _context.ProductTypes.Remove(productType);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductTypeExists(int id)
         {
-          return _context.ProductTypes.Any(e => e.Id == id);
+            return _context.ProductTypes.Any(e => e.Id == id);
         }
     }
 }

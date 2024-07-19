@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using SHOPTV.Data;
+using SHOPTV.Models;
 
 namespace NHOM04.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductsController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public ProductsController(NHOM04Context context)
+        public ProductsController(SHOPTVContext context)
         {
             _context = context;
         }
@@ -101,11 +101,28 @@ namespace NHOM04.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
-            _context.Update(product);
-            _context.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductExists(product.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
             ViewData["ProductTypeId"] = new SelectList(_context.Set<ProductType>(), "Id", "Name", product.ProductTypeId);
-            return RedirectToAction("Index");
+            return View(product);
         }
 
         // GET: Admin/Products/Delete/5

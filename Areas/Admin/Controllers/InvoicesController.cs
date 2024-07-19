@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using SHOPTV.Data;
+using SHOPTV.Models;
 
-namespace NHOM04.Areas.Admin.Controllers
+namespace SHOPTV.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class InvoicesController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public InvoicesController(NHOM04Context context)
+        public InvoicesController(SHOPTVContext context)
         {
             _context = context;
         }
@@ -26,8 +26,8 @@ namespace NHOM04.Areas.Admin.Controllers
             ViewBag.id = HttpContext.Session.GetInt32("id");
             ViewBag.name = HttpContext.Session.GetString("fullname");
             ViewBag.avt = HttpContext.Session.GetString("avatar");
-            var nHOM04Context = _context.Invoices.Include(i => i.Account);
-            return View(await nHOM04Context.ToListAsync());
+            var SHOPTVContext = _context.Invoices.Include(i => i.Account);
+            return View(await SHOPTVContext.ToListAsync());
         }
 
         // GET: Admin/Invoices/Details/5
@@ -102,8 +102,26 @@ namespace NHOM04.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            _context.Update(invoice);
-            _context.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(invoice);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!InvoiceExists(invoice.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
             ViewData["AccountId"] = new SelectList(_context.Set<Account>(), "Id", "Username", invoice.AccountId);
             return RedirectToAction("Index");
         }

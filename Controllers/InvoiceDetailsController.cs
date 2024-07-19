@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using SHOPTV.Data;
+using SHOPTV.Models;
 
-namespace NHOM04.Controllers
+namespace SHOPTV.Controllers
 {
     public class InvoiceDetailsController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public InvoiceDetailsController(NHOM04Context context)
+        public InvoiceDetailsController(SHOPTVContext context)
         {
             _context = context;
         }

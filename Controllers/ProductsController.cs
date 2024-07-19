@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NHOM04.Data;
-using NHOM04.Models;
+using SHOPTV.Data;
+using SHOPTV.Models;
 
 namespace NHOM04.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly NHOM04Context _context;
+        private readonly SHOPTVContext _context;
 
-        public ProductsController(NHOM04Context context)
+        public ProductsController(SHOPTVContext context)
         {
             _context = context;
         }
@@ -24,12 +24,12 @@ namespace NHOM04.Controllers
         {
             ViewBag.id = HttpContext.Session.GetInt32("id");
             ViewBag.name = HttpContext.Session.GetString("fullname");
-            var nHOM04Context = _context.Products.Include(p => p.ProductType);
-            return View(await nHOM04Context.ToListAsync());
+            var SHOPTVContext = _context.Products.Include(p => p.ProductType);
+            return View(await SHOPTVContext.ToListAsync());
         }
 
         // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Detail(int? id)
         {
             ViewBag.id = HttpContext.Session.GetInt32("id");
             ViewBag.name = HttpContext.Session.GetString("fullname");
@@ -57,8 +57,6 @@ namespace NHOM04.Controllers
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SKU,Name,Description,Price,Stock,ProductTypeId,Image,Status")] Product product)
@@ -91,8 +89,6 @@ namespace NHOM04.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SKU,Name,Description,Price,Stock,ProductTypeId,Image,Status")] Product product)
@@ -159,21 +155,37 @@ namespace NHOM04.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Search(string name, int minPrice = 0, int maxPrice = int.MaxValue)
+        public async Task<IActionResult> Search(string name, int minPrice = 0, int maxPrice = int.MaxValue)
         {
-            var products = _context.Products.Where(p => p.Name.Contains(name))
-                                            .Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
+            var products = await _context.Products
+                                         .Where(p => p.Name.Contains(name))
+                                         .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+                                         .ToListAsync();
             return View(products);
         }
-
+        public async Task<IActionResult> SearchFillter(string name, int minPrice = 0, int maxPrice = int.MaxValue)
+        {
+            var products = await _context.Products
+                                   .Where(p => p.Name.Contains(name))
+                                   .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+                                      .Select(p => new
+                                      {
+                                          p.Id,
+                                          p.Name,
+                                          p.Price,
+                                          Image = p.Image
+                                      })
+                                   .ToListAsync();
+            return Json(products);
+        }
         private bool ProductExists(int id)
         {
-          return _context.Products.Any(e => e.Id == id);
+            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

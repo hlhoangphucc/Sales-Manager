@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NHOM04.Models
+namespace SHOPTV.Models
 {
     public class InvoiceDetail
     {
@@ -14,13 +14,13 @@ namespace NHOM04.Models
 
         // Navigation reference property cho khóa ngoại đến Invoice
         [DisplayName("Hóa đơn")]
-        public Invoice Invoice { get; set; }
+        public Invoice? Invoice { get; set; }
 
         public int ProductId { get; set; }
 
         // Navigation reference property cho khóa ngoại đến Product
         [DisplayName("Sản phẩm")]
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         [DisplayName("Số lượng")]
         [DefaultValue(1)]

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<NHOM04.Models.Product>
+﻿@model IEnumerable<SHOPTV.Models.Product>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -86,8 +86,6 @@
         </div>
     </div>
     <!-- Navbar End -->
-
-
     <!-- Featured Start -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
@@ -100,7 +98,7 @@
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Free Shipping</h5>
+                    <h5 class="font-weight-semi-bold m-0">Miễn phí giao hàng</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
@@ -118,33 +116,33 @@
         </div>
     </div>
     <!-- Featured End -->
-
     <!-- Products Start -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">Sản phẩm mới</span></h2>
         </div>
         <div class="row px-xl-5 pb-3">
-            @foreach (var item in Model){
-            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                <div class="card product-item border-0 mb-4">
-                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                        <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@item.Id">
-                            <img class="img-fluid w-100" src="~/img/product/@item.Image" alt="">
-                        </a>
-                    </div>
-                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                        <h6 class="text-truncate mb-3">@Html.DisplayFor(modelItem => item.Name)</h6>
-                        <div class="d-flex justify-content-center">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                    <div class="card product-item border-0 mb-4">
+                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            <a asp-area="" asp-controller="Products" asp-action="Detail" asp-route-id="@item.Id">
+                                <img class="img-fluid w-100" src="~/img/product/@item.Image" alt="">
+                            </a>
+                        </div>
+                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                            <h6 class="text-truncate mb-3">@Html.DisplayFor(modelItem => item.Name)</h6>
+                            <div class="d-flex justify-content-center">
                                 <h6>@((item.Price).ToString("N0")) (VNĐ)</h6><h6 class="text-muted ml-2"><del>@((item.Price + 2000000).ToString("N0"))</del></h6>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between bg-light border">
+                            <a asp-area="" asp-controller="Products" asp-action="Detail" asp-route-id="@item.Id" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                            <a class="btn btn-sm text-dark p-0 add-to-cart" data-productid="@item.Id" data-quantity="1"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                         </div>
                     </div>
-                    <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a asp-area="" asp-controller="Carts" asp-action="Add" asp-route-ProductId="@item.Id" asp-route-Quantity="1" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                    </div>
                 </div>
-            </div>
             }
         </div>
     </div>
@@ -199,4 +197,39 @@
 
     <!-- Template Javascript -->
     <script src="~/js/main.js"></script>
+
+    <!-- jqBootstrapValidation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqBootstrapValidation/1.3.7/jqBootstrapValidation.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').click(function () {
+                var productId = $(this).data('productid');
+                var quantity = $(this).data('quantity');
+
+                $.ajax({
+                    url: '/Carts/Add',
+                    type: 'POST',
+                    data: {
+                        productid: productId,
+                        quantity: quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            if (typeof updateCartQuantity === "function") {
+                                updateCartQuantity();
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Error adding product to cart.');
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
