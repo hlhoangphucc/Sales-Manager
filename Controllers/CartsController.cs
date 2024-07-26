@@ -26,7 +26,7 @@ namespace SHOPTV.Controllers
             // Kiểm tra xem người dùng đã đăng nhập chưa
             if (string.IsNullOrEmpty(username))
             {
-                return RedirectToAction("Login", "User");
+                return RedirectToAction("Login", "Account");
             }
 
             // Đặt các giá trị vào ViewBag để sử dụng trong View nếu cần thiết

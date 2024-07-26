@@ -27,17 +27,28 @@
     <link href="~/css/LayoutStyle.css" rel="stylesheet" />
     <link href="~/css/CartStyle.css" rel="stylesheet" />
     <link href="~/css/EditStyle.css" rel="stylesheet" />
+    <style>
+        /* CSS từ trên */
+        .hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .hover-effect.active {
+                transform: translateY(-10px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row bg-secondary py-2 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block  text-lg-left ">
                 <div class="d-inline-flex align-items-center justify-content-center" style="padding-top:12px">
-                    <a class="text-dark" href="">FAQs</a>
+                    <a class="text-dark" asp-controller="Home" asp-action="Index">Trang chủ</a>
                     <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="">Help</a>
+                    <a class="text-dark" id="scrollButton" href="#">Liên hệ</a>
                     <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="">Support</a>
+                    <a class="text-dark" href="">Hỗ trợ</a>
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
@@ -151,7 +162,7 @@
             </div>
             <div class="col-lg-8 col-md-12">
                 <div class="row">
-                    <div class="col-md-4 mb-5">
+                    <div class="col-md-4 mb-5  hover-effect" id="contact-info">
                         <h5 class="font-weight-bold text-dark mb-4">Contact us</h5>
                         <p>Please contact us if you have any questions about the product</p>
                         <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>HCM,VietNam</p>
@@ -327,8 +338,30 @@
                 chatWidget.style.display = 'none';
             });
 
+            document.getElementById('Contact').addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
+                localStorage.setItem('scrollToBottom', 'true'); // Đặt chỉ thị cuộn xuống cuối trang
+                window.location.href = this.href; 
+            });
+
         });
     </script>
+    <script>
+        document.getElementById('scrollButton').addEventListener('click', function (event) {
+            event.preventDefault(); 
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+            const contactInfo = document.getElementById('contact-info');
+            contactInfo.classList.add('active');
+
+            setTimeout(function () {
+                contactInfo.classList.remove('active');
+            }, 10000);
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

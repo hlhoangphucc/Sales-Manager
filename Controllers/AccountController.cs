@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using SHOPTV.Data;
 using SHOPTV.Models;
-
+using SHOPTV.ViewModels;
 namespace SHOPTV.Controllers
 {
     public class AccountController : Controller
@@ -59,13 +52,21 @@ namespace SHOPTV.Controllers
             {
                 return NotFound();
             }
-
+            var viewModel = new ViewAccountModel
+            {
+                Id = account.Id,
+                FullName = account.FullName,
+                Email = account.Email,
+                Phone = account.Phone,
+                Address = account.Address,
+                Avatar = account.Avatar
+            };
             ViewBag.avatar = HttpContext.Session.GetString("avatar");
             ViewBag.username = account.Username;
             ViewBag.id = id;
             ViewBag.name = HttpContext.Session.GetString("fullname");
 
-            return View(account);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -134,22 +135,45 @@ namespace SHOPTV.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Username,Password,FullName,Address,Avatar,AvatarFile")] Account account)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Email,Phone,Address,Avatar,AvatarFile")] ViewAccountModel viewaccount)
         {
             Debug.WriteLine("chay cai nay 2 ");
 
-            if (id != account.Id)
+            if (id != viewaccount.Id)
             {
                 return NotFound();
             }
-
+            if (!ModelState.IsValid)
+            {
+                foreach (var state in ModelState)
+                {
+                    Debug.WriteLine($"Key: {state.Key}");
+                    foreach (var error in state.Value.Errors)
+                    {
+                        Debug.WriteLine($"Error: {error.ErrorMessage}");
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (account.AvatarFile != null && account.AvatarFile.Length > 0)
+                    var account = await _context.Accounts.FindAsync(id);
+
+                    if (account == null)
                     {
-                        var fileName = Path.GetFileName(account.AvatarFile.FileName);
+                        return NotFound();
+                    }
+
+                    // Cập nhật thông tin tài khoản từ ViewModel
+                    account.FullName = viewaccount.FullName;
+                    account.Email = viewaccount.Email;
+                    account.Phone = viewaccount.Phone;
+                    account.Address = viewaccount.Address;
+
+                    if (viewaccount.AvatarFile != null && viewaccount.AvatarFile.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(viewaccount.AvatarFile.FileName);
                         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
 
                         if (!Directory.Exists(uploadsFolder))
@@ -160,7 +184,7 @@ namespace SHOPTV.Controllers
                         var filePath = Path.Combine(uploadsFolder, fileName);
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
-                            await account.AvatarFile.CopyToAsync(fileStream);
+                            await viewaccount.AvatarFile.CopyToAsync(fileStream);
                         }
 
                         account.Avatar = "/images/" + fileName;
@@ -171,7 +195,7 @@ namespace SHOPTV.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AccountExists(account.Id))
+                    if (!AccountExists(id))
                     {
                         return NotFound();
                     }
@@ -180,9 +204,9 @@ namespace SHOPTV.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Edit), new { id = viewaccount.Id });
             }
-            return View(account);
+            return View(viewaccount);
         }
     }
 }
