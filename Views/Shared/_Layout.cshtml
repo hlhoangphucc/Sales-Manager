@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SHOPTV</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/css/style.css" rel="stylesheet">
+    <link href="~/css/SignupStyle.css" rel="stylesheet">
+    <link href="~/css/LayoutStyle.css" rel="stylesheet" />
+    <link href="~/css/CartStyle.css" rel="stylesheet" />
+    <link href="~/css/EditStyle.css" rel="stylesheet" />
+    <style>
+        /* CSS từ trên */
+        .hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .hover-effect.active {
+                transform: translateY(-10px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row bg-secondary py-2 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block  text-lg-left ">
+                <div class="d-inline-flex align-items-center justify-content-center" style="padding-top:12px">
+                    <a class="text-dark" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" id="scrollButton" href="#">Liên hệ</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Hỗ trợ</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                @{
+                    @if (ViewBag.name != null)
+                    {
+                        <div class="d-inline-flex align-items-center">
+                            <span class="text-muted px-2">Xin chào: &nbsp @ViewBag.name </span>
+                            @if (ViewContext.HttpContext.Session.GetString("avatar") != null)
+                            {
+                                var avatarUrl = ViewContext.HttpContext.Session.GetString("avatar");
+                                if (!string.IsNullOrEmpty(avatarUrl))
+                                {
+                                    <img id="settingIcon" class="img-avt" src="@avatarUrl" alt="Avatar" />
+                                }
+                            }
+
+                            <div class="setting-widget" id="settingWidget">
+                                <div class="setting-header">
+                                    <div class="setting-title">
+                                        <img src="@ViewBag.avt" alt="TV Shop Logo" class="logo">
+                                        <span>Cài đặt</span>
+                                    </div>
+                                </div>
+                                <div class="setting-body">
+                                    <form asp-area="" asp-controller="Account" asp-action="Edit" class="div-button" method="get">
+                                        <button class="setting-button">Thông tin</button>
+                                    </form>
+                                    <form asp-area="" asp-controller="Account" asp-action="Logout" class="div-button">
+                                        <button class="setting-button">Đăng xuất</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-inline-flex align-items-center">
+                            <a asp-area="" asp-controller="Account" asp-action="Login" class="text-dark">Đăng nhập</a>
+                            <span class="text-muted px-2">|</span>
+                            <a asp-area="" asp-controller="Account" asp-action="Signup" class="text-dark">Đăng ký</a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        @{
+            var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+            var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+        }
+
+        @if (currentController != "Account" && currentAction != "Signup")
+        {
+            <div class="container-fluid">
+                <div class="row align-items-center py-3 px-xl-5">
+                    <div class="col-lg-3 d-none d-lg-block">
+                        <a asp-controller="Home" class="text-decoration-none">
+                            <h1 class="m-0 display-5 font-weight-semi-bold">
+                                <span class="text-primary font-weight-bold border px-3 mr-1">TV</span>Shop
+                            </h1>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-6 text-left">
+                        <form asp-controller="Products" asp-action="Search" id="searchForm">
+                            <div class="input-group">
+                                <input name="name" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" id="searchInput">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-transparent text-primary">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="search-results" id="searchResults"></div>
+                        <template id="productTemplate">
+                            <a href="" class="search-item">
+                                <img src="" alt="Product Image" />
+                                <div class="product-info">
+                                    <span class="product-name"></span>
+                                    <h6 class="product-price"></h6>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+                    <div class="col-lg-3 col-6 text-right">
+                        <a asp-area="" asp-controller="Carts" asp-action="" class="btn border cart-icon">
+                            <i class="fas fa-shopping-cart text-primary"></i>
+                            <span class="badge" id="totalQuantity"></span>
+                        </a>
+                        <span class="ml-2">Giỏ hàng</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <!-- Topbar End -->
+
+    <div>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <div class="container-fluid bg-secondary text-dark mt-5 pt-5 ">
+        <div class="row px-xl-5 pt-5 ">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5" style="display: flex;justify-content: center;align-items: center;">
+                <a href="" class="text-decoration-none">
+                    <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">TV</span>Shop</h1>
+                </a>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5  hover-effect" id="contact-info">
+                        <h5 class="font-weight-bold text-dark mb-4">Contact us</h5>
+                        <p>Please contact us if you have any questions about the product</p>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>HCM,VietNam</p>
+                        <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>hlhphucc@gmail.com</p>
+                        <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+84336755724</p>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">General Policy</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-dark mb-2"><i class="fa fa-angle-right mr-2"></i>Warranty policy</a>
+                            <a class="text-dark mb-2"><i class="fa fa-angle-right mr-2"></i>Complaint policy</a>
+                            <a class="text-dark mb-2"><i class="fa fa-angle-right mr-2"></i>Installment policy</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Newsletter</h5>
+                        <form action="">
+                            <div class="form-group">
+                                <input type="text" class="form-control border-0 py-4" placeholder="Your Name" required="required" />
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control border-0 py-4" placeholder="Your Email"
+                                       required="required" />
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-block border-0 py-3" type="submit">Subscribe Now</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="chat-icon" id="chatIcon">
+        <img src="~/img/avatar/admin.jpg" alt="Chat Icon">
+    </div>
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            <div class="chat-title">
+                <img src="~/img/avatar/admin.jpg" alt="TV Shop Logo" class="logo">
+                <span>TV Shop</span>
+            </div>
+            <button class="chat-close" id="chatClose">&times;</button>
+        </div>
+        <div class="chat-body">
+            <p class="chat-welcome">Xin chào!</p>
+            <p class="chat-subtext">Rất vui khi được hỗ trợ bạn</p>
+            <p class="chat-subtext">Bắt đầu trò chuyện với TV Shop</p>
+            @{
+                if (ViewBag.name == null)
+                {
+                    <button class="chat-button zalo">Đăng nhập</button>
+                    <button class="chat-button quick-chat">Chat nhanh</button>
+                }
+                else
+                {
+                    <button class="chat-button quick-chat">Chat ngay</button>
+                }
+            }
+
+        </div>
+    </div>
+
+    @*     <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            $('#searchInput').on('input', function () {
+                var query = $(this).val();
+                if (query.length > 2) {
+                    $.ajax({
+                        url: '/Products/SearchFillter',
+                        type: 'GET',
+                        data: { name: query },
+                        success: function (data) {
+                            console.log(data);
+                            var results = $('#searchResults');
+                            results.empty();
+                            var template = document.getElementById('productTemplate').content
+                            data.forEach(function (product) {
+
+                                var productItem = document.importNode(template, true);
+
+                                var productLink = productItem.querySelector('a');
+                                productLink.href = '/Products/Detail/' + product.id;
+
+                                var productImage = productItem.querySelector('img');
+                                productImage.src = '/img/product/' + product.image;
+                                productImage.alt = 'Product Image';
+
+                                var productName = productItem.querySelector('.product-name');
+                                productName.textContent = product.name;
+
+                                var productPrice = productItem.querySelector('h6');
+                                productPrice.textContent = product.price.toLocaleString('vi-VN') + '₫';
+
+                                results.append(productItem);
+                            });
+                        }
+                    });
+                } else {
+                    $('#searchResults').empty();
+                }
+            });
+
+            $(document).ready(function () {
+                function updateCartQuantity() {
+                    $.ajax({
+                        url: '/Carts/GetQuantity',
+                        type: 'GET',
+                        success: function (response) {
+                            if (response.success) {
+                                $('#totalQuantity').text(response.totalQuantity);
+                            } else {
+                                console.error(response.message);
+                            }
+                        },
+                        error: function () {
+                            console.error('Error fetching cart quantity');
+                        }
+                    });
+                }
+                updateCartQuantity();
+                window.updateCartQuantity = updateCartQuantity;
+            });
+
+
+            $('#searchForm').on('submit', function (event) {
+                var query = $('#searchInput').val();
+                if (query.length <= 2) {
+                    event.preventDefault();
+                }
+            });
+
+            const chatIcon = document.getElementById('chatIcon');
+            const chatWidget = document.getElementById('chatWidget');
+            const chatClose = document.getElementById('chatClose');
+
+            chatIcon.addEventListener('click', function () {
+                chatWidget.style.display = 'block';
+            });
+
+            chatClose.addEventListener('click', function () {
+                chatWidget.style.display = 'none';
+            });
+
+
+
+            const settingIcon = document.getElementById('settingIcon');
+            const settingWidget = document.getElementById('settingWidget');
+            const settingClose = document.getElementById('settingClose');
+
+            settingIcon.addEventListener('click', function (event) {
+                if (settingWidget.style.display === 'block') {
+                    settingWidget.style.display = 'none';
+                }
+                else {
+                    settingWidget.style.display = 'block';
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!settingWidget.contains(event.target) && !settingIcon.contains(event.target)) {
+                    settingWidget.style.display = 'none';
+                }
+            });
+
+            window.addEventListener('scroll', function () {
+                settingWidget.style.display = 'none';
+                chatWidget.style.display = 'none';
+            });
+
+            document.getElementById('Contact').addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
+                localStorage.setItem('scrollToBottom', 'true'); // Đặt chỉ thị cuộn xuống cuối trang
+                window.location.href = this.href; 
+            });
+
+        });
+    </script>
+    <script>
+        document.getElementById('scrollButton').addEventListener('click', function (event) {
+            event.preventDefault(); 
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+            const contactInfo = document.getElementById('contact-info');
+            contactInfo.classList.add('active');
+
+            setTimeout(function () {
+                contactInfo.classList.remove('active');
+            }, 10000);
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

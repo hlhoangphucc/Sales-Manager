@@ -1,0 +1,29 @@
+﻿@*<form asp-action="Purchase">
+    <div class="form-group">
+        <label>Địa chỉ ship:</label>
+        <input type="text" name="ShippingAddress" class="form-control" />
+    </div>
+    <div class="form-group mb-2">
+        <label>SĐT:</label>
+        <input type="text" name="ShippingPhone" class="form-control" />
+    </div>
+    <button class="btn btn-success">Thanh toán</button>
+</form>*@
+
+<form asp-action="Purchase" class="container-fluid" , style="width:500px">
+    <h1 class="text-center mb-4">Thông tin thanh toán</h1>
+  <!-- Email input -->
+  <div class="form-outline mb-4">
+        <label>Địa chỉ ship:</label>
+        <input type="text" name="ShippingAddress" class="form-control" />
+  </div>
+
+  <!-- Password input -->
+  <div class="form-outline mb-4">
+        <label>SĐT:</label>
+        <input type="text" name="ShippingPhone" class="form-control" />
+  </div>
+
+  <!-- Submit button -->
+    <button class="btn btn-success">Thanh toán</button>
+</form>

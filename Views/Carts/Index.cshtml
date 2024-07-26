@@ -1,0 +1,146 @@
+﻿@model IEnumerable<Cart>
+
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+    bool hasProduct = Model.Any(item => item.Product != null);
+}
+
+<div class="container-fluid mb-5">
+    <div class="row border-top px-xl-5">
+        <!-- Cart Start -->
+        <div class="col-lg-8">
+            @if (hasProduct)
+            {
+                <table class="table table-bordered text-center">
+                    <thead class="bg-secondary text-dark">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Mô Tả</th>
+                            <th>Giá</th>
+                            <th>Số Lượng</th>
+                            <th>Tổng</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            if (item.Product != null)
+                            {
+                                <tr data-item-id="@item.ProductId">
+                                    <td>
+                                        <img src="~/img/product/@item.Product.Image" style="width: 50px;">
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Product.Name)
+                                    </td>
+                                    <td class="price">
+                                        @((item.Product.Price).ToString("#,##0 đ"))
+                                    </td>
+                                    <td>
+                                        <input type="number" value="@item.Quantity" min="1" class="form-control text-center quantity-input" data-id="@item.ProductId">
+                                    </td>
+                                    <td class="total">
+                                        @((item.Product.Price * item.Quantity))
+                                    </td>
+                                    <td>
+                                        <form asp-action="Delete" asp-route-id="@item.Id">
+                                            <button class="btn custom-hover">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+                    <h3>Không có sản phẩm nào trong giỏ hàng</h3>
+                </div>
+            }
+        </div>
+        <!-- Cart End -->
+
+        <!-- Summary and Actions Start -->
+        <div class="col-lg-4">
+            <div class="bg-light p-3 mb-3">
+                <h5 class="font-weight-bold">Tổng tiền:</h5>
+                <h5 class="text-right" id="total-price">@Model.Sum(c => c.Product.Price * c.Quantity)</h5>
+            </div>
+            <div class="d-flex justify-content-between flex-row">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mb-3">TIẾP TỤC MUA SẮM</a>
+                <a asp-action="Purchase" class="btn btn-danger mb-3">THANH TOÁN</a>
+            </div>
+            <div class="mt-3">
+                <label for="comment">Chú Thích:</label>
+                <textarea id="comment" class="form-control" placeholder="Bạn muốn mô tả rõ hơn về đơn hàng..."></textarea>
+            </div>
+        </div>
+        <!-- Summary and Actions End -->
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        function formatCurrency(value) {
+            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+        function updateAllPrices() {
+            $('.price').each(function () {
+                var price = parseFloat($(this).text().replace(/[^\d]/g, ''));
+                $(this).text(formatCurrency(price));
+            });
+
+            $('.total').each(function () {
+                var total = parseFloat($(this).text().replace(/[^\d]/g, ''));
+                $(this).text(formatCurrency(total));
+            });
+
+            var totalPrice = parseFloat($('#total-price').text().replace(/[^\d]/g, ''));
+            $('#total-price').text(formatCurrency(totalPrice));
+        }
+
+        updateAllPrices();
+
+        $('.quantity-input').on('change', function () {
+            var quantity = $(this).val();
+            var itemId = $(this).data('id');
+            var url = '@Url.Action("UpdateQuantity","Carts")';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    productid: itemId,
+                    quantity: quantity
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var row = $('tr[data-item-id="' + itemId + '"]');
+                        var price = parseFloat(row.find('.price').text().replace(/[^\d]/g, ''));
+                        var newTotal = price * quantity;
+                        row.find('.total').text(formatCurrency(newTotal));
+
+                        // Cập nhật lại tổng tiền
+                        var total = 0;
+                        $('.total').each(function () {
+                            total += parseFloat($(this).text().replace(/[^\d]/g, ''));
+                        });
+                        $('#total-price').text(formatCurrency(total));
+                        updateCartQuantity();
+                    } else {
+                        alert('Error updating quantity: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error updating quantity: ' + error);
+                }
+            });
+        });
+    });
+</script>

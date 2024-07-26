@@ -1,0 +1,141 @@
+﻿@model SHOPTV.ViewModels.ViewAccountModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+<div class="container">
+    <div class="profile-header">
+
+        <img src="@ViewBag.avatar" alt="Profile Image" class="profile-image" />
+        <h2>@ViewBag.avt</h2>
+        <span class="text-muted px-2 custom-text"> @ViewBag.name</span>
+    </div>
+
+    <div class="profile-stats-wrapper">
+        <div class="profile-stats">
+            <div class="stat">
+                <h3>150</h3>
+                <p>Đơn hàng</p>
+            </div>
+            <div class="stat">
+                <h3>150</h3>
+                <p>Theo dõi</p>
+            </div>
+            <div class="stat">
+                <h3>150</h3>
+                <p>Đánh giá</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-tabs">
+        <button class="tab active col-lg-4 " onclick="showTab('about')">Giới thiệu về tôi</button>
+        <button class="tab col-lg-4" onclick="showTab('edit')">Chỉnh sửa hồ sơ</button>
+        <button class="tab col-lg-3" onclick="showTab('change-password')">Đổi mật khẩu</button>
+    </div>
+
+        <form asp-action="Edit" class="profile-form" method="post" enctype="multipart/form-data">
+            <div id="user-info" class="tab-content">
+                <div class="form-group">
+                    <div class="form-row">
+                         <input type="hidden" asp-for="Id" />
+                        <div class="form-column">
+                        <label for="FullName">Họ và tên</label>
+                        <input asp-for="FullName" class="form-control user-info" disabled autofocus="makeBold(this)" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        </div>
+                        <div class="form-column">
+                            <label for="Email">Email</label>
+                        <input asp-for="Email" class="form-control user-info" disabled onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label for="Phone">Số điện thoại</label>
+                    <input asp-for="Phone" class="form-control user-info" disabled onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                    </div>
+                    <div class="form-row">
+                        <label for="Address">Địa chỉ</label>
+                    <input asp-for="Address" class="form-control user-info" disabled onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                    </div>
+                </div>
+            <button type="submit" class="btn btn-primary" id="save-button" style="display:none;">Lưu thay đổi</button>
+            </div>
+        </form>
+
+
+    <div id="change-password" class="tab-content" style="display: none;">
+        <!-- Nội dung của tab "Đổi mật khẩu" -->
+        <p>Đây là phần đổi mật khẩu...</p>
+    </div>
+</div>
+
+
+<script>
+    function showTab(tabId) {
+        // Ẩn tất cả các nội dung tab
+        var contents = document.querySelectorAll('.tab-content');
+        contents.forEach(function (content) {
+            content.classList.remove('active');
+        });
+
+        // Xóa class active khỏi tất cả các tab
+        var tabs = document.querySelectorAll('.tab');
+        tabs.forEach(function (tab) {
+            tab.classList.remove('active');
+        });
+
+        // Hiển thị nội dung tab được chọn
+        if (tabId === 'about' || tabId === 'edit') {
+            document.getElementById('user-info').classList.add('active');
+        } else {
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Thêm class active vào tab được chọn
+        event.currentTarget.classList.add('active');
+
+        // Điều chỉnh thuộc tính disabled của các trường thông tin
+        var userInfoFields = document.querySelectorAll('.user-info');
+        var saveButton = document.getElementById('save-button');
+        if (tabId === 'edit') {
+            userInfoFields.forEach(function (field) {
+                field.removeAttribute('disabled');
+            });
+            saveButton.style.display = 'block';
+        } else {
+            userInfoFields.forEach(function (field) {
+                field.setAttribute('disabled', 'disabled');
+            });
+            saveButton.style.display = 'none';
+        }
+    }
+
+    // Hiển thị mặc định tab "Giới thiệu về tôi"
+    showTab('about');
+</script>
+
+<script>
+    function makeBold(element) {
+        var label = element.previousElementSibling;
+        if (label && label.tagName === 'LABEL') {
+            label.classList.add('bold');
+        }
+    }
+
+    function removeBold(element) {
+        var label = element.previousElementSibling;
+        if (label && label.tagName === 'LABEL') {
+            label.classList.remove('bold');
+        }
+    }
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('avatarPreview');
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>

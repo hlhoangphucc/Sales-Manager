@@ -1,0 +1,97 @@
+﻿@model SHOPTV.Models.Account
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="content">
+    <h1 class="text-center mb-4">Đăng ký</h1>
+
+    <h4 class="text-center mb-4">Tài Khoản </h4>
+    <hr />
+
+    <div class="container-fluid d-flex align-items-center justify-content-center">
+        <div class="row  custom-row">
+            <div class="col-md-12">
+                <form asp-action="Signup" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Username" class="control-label"></label>
+                        <input asp-for="Username" class="form-control" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password" class="control-label"></label>
+                        <input asp-for="Password" class="form-control" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FullName" class="control-label"></label>
+                        <input asp-for="FullName" class="form-control" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Phone" class="control-label"></label>
+                        <input asp-for="Phone" class="form-control" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Address" class="control-label"></label>
+                        <input asp-for="Address" class="form-control" onmouseover="makeBold(this)" onmouseout="removeBold(this)" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                
+                    <div class="form-group">
+                        <input asp-for="IsAdmin" type="hidden" value="false" />
+                        <span asp-validation-for="IsAdmin" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AvatarFile" class="control-label"></label>
+                        <input asp-for="AvatarFile" class="form-control" type="file" onmouseover="makeBold(this)" onmouseout="removeBold(this)" onchange="previewImage(event)" />
+                        <span asp-validation-for="AvatarFile" class="text-danger"></span>
+                        <img id="avatarPreview" src="#" alt="Image Preview" style="display:none; margin-top: 10px; max-width: 500px; height: auto;" />
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Đăng ký" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        <script>
+            function makeBold(element) {
+                var label = element.previousElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.classList.add('bold');
+                }
+            }
+
+            function removeBold(element) {
+                var label = element.previousElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.classList.remove('bold');
+                }
+            }
+            function previewImage(event) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var output = document.getElementById('avatarPreview');
+                    output.src = reader.result;
+                    output.style.display = 'block';
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        </script>
+    }
+</div>

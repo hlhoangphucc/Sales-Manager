@@ -1,0 +1,26 @@
+﻿.table td, .table th {
+    vertical-align: middle;
+}
+
+.custom-hover {
+    background-color: initial; 
+    border: none; 
+}
+
+    .custom-hover:hover {
+        color: red;
+    }
+
+.btn-secondary, .btn-danger {
+    width: 180px;
+}
+
+.btn-secondary {
+    font-size: 16px;
+
+}
+
+
+textarea#comment {
+    width: 100%;
+}
